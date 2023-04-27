@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+
+<style>
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    }
+    
+    body {
+      width: 100%;
+      background-color: skyblue;
+    }
+      
+      .container {
+        width: 30rem;
+        margin: 2rem auto;
+      }
+      
+      .title {
+        text-align: center;
+      }
+      
+      .form {
+        background-color: #fff;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+      
+      .form input {
+        flex: 1;
+        padding: 0.7rem;
+        border: none;
+        background-color: transparent;
+        outline: none;
+      }
+
+      .form button {
+        padding: 0.7rem;
+        background-color: darkblue;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+      }
+
+      .lists{
+        display: grid;
+        grid-template-columns: 75% 10% 15%;
+      }
+
+      .editBtn {
+        margin: 5px;
+      }
+
+      .delBtn {
+        margin: 5px;
+      }
+      
+      .lists .todo {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #fff;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+      }
+      
+      .lists .todo span {
+        cursor: pointer;
+      }
+
+      .listItem {
+        background-color:lightcyan;
+        border: solid 2px black;
+        border-radius: 5px;
+        padding: 5px;
+        margin: 3px;
+        
+      }
+      
+</style>
+
+</head>
+
+<body>
+
+    <div class="container">
+      <h1 class="title">Note-ily</h1>
+      <form class="form" data-form>
+        <input type="text" data-input placeholder="New Note">
+        <button class="btn">Submit</button>
+      </form>
+      <div class="lists" data-lists>
+
+      </div>
+    </div>
+
+</body>
+
+<!--
+<script>
+
+const form = document.querySelector('[data-form]');
+const input = document.querySelector('[data-input]');
+const lists = document.querySelector('[data-lists]');
+
+let todoArr = Storage.getStorage();
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const id = Math.random() * Math.floor(100000);
+
+  class ToDo {
+    constructor(id, todo) {
+      this.id = id;
+      this.todo = todo;
+    }
+  }
+
+  const todo = new ToDo(id, input.value);
+  console.log(todo);
+
+  todoArr = [...todoArr, todo];
+  console.log(todoArr);
+
+  UI.displayData(todoArr);
+  UI.clearInput();
+  Storage.addToStorage(todoArr);
+});
+
+class UI {
+  static displayData(todoArr) {
+    lists.innerHTML = '';
+    todoArr.forEach(todo => {
+      lists.innerHTML += `<div class="todo" data-id="${todo.id}">${todo.todo}<button class="remove">Delete</button><button class="edit">Edit</button></div>`;
+    });
+    UI.removeToDo();
+  }
+
+  static clearInput() {
+    input.value = '';
+  }
+
+  static removeToDo() {
+    lists.addEventListener('click', (event) => {
+      if (event.target.classList.contains('remove')) {
+        event.target.parentElement.remove();
+        const btnId = event.target.parentElement.dataset.id;
+        UI.removeArrayTodo(btnId);
+      }
+    });
+  }
+
+  static removeArrayTodo(id) {
+    todoArr = todoArr.filter(todo => todo.id != id);
+    Storage.addToStorage(todoArr);
+  }
+}
+
+class Storage {
+  static addToStorage(todoArr) {
+    localStorage.setItem('todo', JSON.stringify(todoArr));
+  }
+
+  static getStorage() {
+    const storage = localStorage.getItem('todo') ? JSON.parse(localStorage.getItem('todo')) : [];
+    return storage;
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  UI.displayData(todoArr);
+});
+
+</script>
+-->
+
+<script>
+
+const form = document.querySelector("[data-form]")
+const input = document.querySelector("[data-input]")
+const lists = document.querySelector("[data-lists]")
+
+class Note {
+  constructor(id, todo) {
+    this.id = id
+    this.todo = todo
+  }
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault()
+  const id = Math.random() * Math.random()
+  const todo = new Note(id, input.value)
+
+  const newNote = document.createElement("p")
+  newNote.setAttribute("id", id)
+  newNote.classList.add("listItem")
+  newNote.innerHTML = todo.todo
+
+  input.value = ""
+
+  const editBtn = document.createElement("button")
+  editBtn.innerHTML = "Edit"
+  editBtn.classList.add("editBtn")
+  editBtn.addEventListener("click", (e) => {
+    const input = document.createElement("input")
+    input.value = todo.todo
+    input.addEventListener("blur", () => {
+      todo.todo = input.value
+      newNote.innerHTML = todo.todo
+      lists.appendChild(editBtn)
+      lists.appendChild(deleteBtn)
+    })
+    newNote.innerHTML = ""
+    newNote.appendChild(input)
+    input.focus()
+  })
+
+  const deleteBtn = document.createElement("button")
+  deleteBtn.innerHTML = "Delete"
+  deleteBtn.classList.add("delBtn")
+  deleteBtn.addEventListener("click", (e) => {
+    newNote.remove()
+  })
+
+  lists.appendChild(newNote)
+  lists.appendChild(editBtn)
+  lists.appendChild(deleteBtn)
+
+
+// Saves to local storage
+  const notes = JSON.parse(localStorage.getItem("notes")) || []
+  notes.push(todo)
+  localStorage.setItem("notes", JSON.stringify(notes))
+})
+
+// Loads from local storage
+  const savedNotes = JSON.parse(localStorage.getItem("notes")) || []
+  savedNotes.forEach((note) => {
+  const newNote = document.createElement("p")
+  newNote.setAttribute("id", note.id)
+  newNote.classList.add("listItem")
+  newNote.innerHTML = note.todo
+
+  const editBtn = document.createElement("button")
+  editBtn.innerHTML = "Edit"
+  editBtn.classList.add("editBtn")
+  editBtn.addEventListener("click", (e) => {
+    const input = document.createElement("input")
+    input.value = note.todo
+    input.addEventListener("blur", () => {
+      note.todo = input.value
+      newNote.innerHTML = note.todo
+      lists.appendChild(editBtn)
+      lists.appendChild(deleteBtn)
+    })
+    newNote.innerHTML = ""
+    newNote.appendChild(input)
+    input.focus()
+  })
+
+  const deleteBtn = document.createElement("button")
+  deleteBtn.innerHTML = "Delete"
+  deleteBtn.classList.add("delBtn")
+  deleteBtn.addEventListener("click", (e) => {
+    const notes = JSON.parse(localStorage.getItem("notes")) || []
+    const index = notes.findIndex((item) => item.id === note.id)
+    notes.splice(index, 1)
+    localStorage.setItem("notes", JSON.stringify(notes))
+    newNote.remove()
+  })
+
+  lists.appendChild(newNote)
+  lists.appendChild(editBtn)
+  lists.appendChild(deleteBtn)
+})
+
+const deleteAllBtn = document.createElement("button");
+deleteAllBtn.innerHTML = "Delete All";
+deleteAllBtn.classList.add("delete-all-button");
+deleteAllBtn.addEventListener("click", (e) => {
+  localStorage.removeItem("notes");
+  const notes = document.querySelectorAll("[id]");
+  notes.forEach((note) => note.remove());
+});
+lists.parentNode.insertBefore(deleteAllBtn, lists);
+
+
+</script>
+
+</html>
